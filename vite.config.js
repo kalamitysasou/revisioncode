@@ -3,7 +3,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  base: '/revisioncode/',
+  base: process.env.VITE_BASE_URL || '/',
   plugins: [
     svelte(),
     VitePWA({
