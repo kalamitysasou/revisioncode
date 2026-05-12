@@ -13,6 +13,8 @@ function mkDefault() {
     bestStreak: 0,
     totalPts:   0,
     daily:      { date: '', count: 0 },
+    history:    {},       // { 'YYYY-MM-DD': questionsAnswered }
+    lastErrors: [],       // question _ids from last session's errors
     xp:         0,
     level:      1,
     achievements: [],
@@ -57,6 +59,21 @@ export function getXPProgress(xp) {
   const start = XP_PER_LEVEL[lv - 1]
   const end   = XP_PER_LEVEL[lv]
   return Math.round(((xp - start) / (end - start)) * 100)
+}
+
+// Compute consecutive daily streak from history
+export function getDailyStreak(history = {}) {
+  if (!history) return 0
+  let streak = 0
+  const today = new Date()
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(today)
+    d.setDate(d.getDate() - i)
+    const key = d.toISOString().split('T')[0]
+    if (history[key]) streak++
+    else if (i > 0) break
+  }
+  return streak
 }
 
 // Achievements definitions

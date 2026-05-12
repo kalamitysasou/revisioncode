@@ -1,8 +1,9 @@
 <script>
   import { screen } from '../../stores/game.js'
-  import { stats, getLevelFromXP, getXPProgress, ACHIEVEMENTS, XP_PER_LEVEL } from '../../stores/stats.js'
+  import { stats, getLevelFromXP, getXPProgress, ACHIEVEMENTS, XP_PER_LEVEL, getDailyStreak } from '../../stores/stats.js'
   import { CATEGORIES } from '../../data/questions.js'
   import { fly } from 'svelte/transition'
+  import StreakCalendar from '../ui/StreakCalendar.svelte'
 
   $: st = $stats
   $: sessions = st.sessions ?? []
@@ -10,6 +11,7 @@
   $: xpPct = getXPProgress(st.xp ?? 0)
   $: nextXP = XP_PER_LEVEL[lv] ?? '∞'
   $: earned = st.achievements ?? []
+  $: dailyStreak = getDailyStreak(st.history)
 
   function pct(cat) {
     const tot = st.themeTotal?.[cat] || 0
@@ -45,9 +47,12 @@
   <div class="global-stats">
     <div class="gs-box"><div class="gs-val acc">{sessions.length}</div><div class="gs-lbl">Sessions</div></div>
     <div class="gs-box"><div class="gs-val grn">{sessions.length ? Math.round(sessions.reduce((a,s)=>a+s.pct,0)/sessions.length) : '—'}%</div><div class="gs-lbl">Moy. score</div></div>
-    <div class="gs-box"><div class="gs-val org">{st.bestStreak ?? 0}</div><div class="gs-lbl">🔥 Best streak</div></div>
+    <div class="gs-box"><div class="gs-val org">{dailyStreak}</div><div class="gs-lbl">📅 Jours streak</div></div>
     <div class="gs-box"><div class="gs-val pur">{st.totalPts ?? 0}</div><div class="gs-lbl">⭐ Total pts</div></div>
   </div>
+
+  <!-- Streak calendar -->
+  <StreakCalendar history={st.history ?? {}} />
 
   <!-- Theme bars -->
   <p class="sect-lbl">Maîtrise par thème</p>

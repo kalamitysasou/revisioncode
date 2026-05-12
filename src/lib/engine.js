@@ -12,6 +12,10 @@ function buildSet(mode, theme = 'all') {
   if (mode === 'anki')   return shuffle(ankiDue(get(stats).anki)).slice(0, 20)
   if (mode === 'hard')   return shuffle(BANQUE.filter(q => get(stats).hardIds.includes(q._id)))
   if (mode === 'errors') return get(gameState).results.filter(r => !r.ok).map(r => r.q)
+  if (mode === 'last_errors') {
+    const ids = get(stats).lastErrors ?? []
+    return shuffle(BANQUE.filter(q => ids.includes(q._id)))
+  }
   const pool = theme === 'all' ? BANQUE : BANQUE.filter(q => q.c === theme)
   return shuffle(pool).slice(0, 15)
 }
@@ -48,7 +52,6 @@ export function checkAnswer(chosen) {
   const isOk = chosen.length === q.r.length &&
     chosen.every(i => q.r.includes(i)) &&
     q.r.every(i => chosen.includes(i))
-  const isPartial = !isOk && chosen.some(i => q.r.includes(i))
   const fast = (Date.now() - gs.qStart) < 8000
 
   const st = get(stats)
@@ -76,7 +79,6 @@ export function checkAnswer(chosen) {
       results: [...g.results, { q, ok: true, chosen, pts: ptsGain, xp: xpGain }],
     }))
 
-    // Update anki
     stats.update(s => {
       s.anki = ankiUpdate(s.anki, q._id, true)
       s.themeTotal[q.c] = (s.themeTotal[q.c] || 0) + 1
@@ -84,7 +86,7 @@ export function checkAnswer(chosen) {
       stats.save(s); return s
     })
   } else {
-    xpGain = 2 // consolation
+    xpGain = 2
     beep('err')
 
     gameState.update(g => ({
@@ -112,11 +114,13 @@ export function checkAnswer(chosen) {
     }
   }
 
-  // Daily goal
+  // Daily goal + history
   stats.update(s => {
     const today = new Date().toISOString().split('T')[0]
     if (s.daily.date !== today) s.daily = { date: today, count: 0 }
     s.daily.count++
+    if (!s.history) s.history = {}
+    s.history[today] = (s.history[today] || 0) + 1
     stats.save(s); return s
   })
 }
@@ -154,6 +158,9 @@ export function saveSession() {
     s.bestStreak = Math.max(s.bestStreak, gs.maxStreak)
     s.sessions.unshift({ date: new Date().toLocaleDateString('fr-FR'), mode: gs.mode, score: gs.score, total: ans, pts: gs.pts, maxStreak: gs.maxStreak, pct })
     if (s.sessions.length > 60) s.sessions.pop()
+
+    // Store last session errors for replay from home
+    s.lastErrors = gs.results.filter(r => !r.ok).map(r => r.q._id)
 
     // Achievements checks
     if (s.sessions.length === 1) newAch.push(ACHIEVEMENTS.find(a => a.id === 'first_session'))

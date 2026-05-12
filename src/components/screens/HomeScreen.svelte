@@ -6,6 +6,8 @@
   import { launch } from '../../lib/engine.js'
   import { fly } from 'svelte/transition'
 
+  function replayLastErrors() { launch('last_errors') }
+
   const MODES = [
     { id:'practice', icon:'📚', label:'Révision libre',   desc:'15 questions · Indices · Explications · Sans pression', color:'var(--acc)' },
     { id:'exam',     icon:'🎯', label:'Examen blanc',     desc:'40 questions · 40 minutes · Seuil 35/40 (ANTS)', color:'var(--red)' },
@@ -148,6 +150,11 @@
   <div class="nav-btns">
     <button class="nav-btn" onclick={() => screen.set('dash')}>📊 Mes stats</button>
     <button class="nav-btn" onclick={() => screen.set('hard')}>⭐ Difficiles ({($stats.hardIds??[]).length})</button>
+    {#if ($stats.lastErrors??[]).length}
+      <button class="nav-btn nav-btn-err" onclick={replayLastErrors}>
+        🔁 Dernières erreurs ({$stats.lastErrors.length})
+      </button>
+    {/if}
   </div>
 </div>
 
@@ -243,4 +250,6 @@
     color: var(--mut); cursor: pointer; transition: all .2s; text-align: center;
   }
   .nav-btn:hover { border-color: var(--acc); color: var(--acc) }
+  .nav-btn-err { border-color: rgba(239,68,68,.3); color: var(--red); grid-column: 1 / -1 }
+  .nav-btn-err:hover { border-color: var(--red) }
 </style>
