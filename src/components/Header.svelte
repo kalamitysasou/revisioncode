@@ -1,6 +1,7 @@
 <script>
   import { screen, gameState, selMode } from '../stores/game.js'
   import { stats, getLevelFromXP, getXPProgress } from '../stores/stats.js'
+  import { profiles, currentProfile } from '../stores/profiles.js'
   import { beep } from '../lib/sound.js'
 
   function toggleTheme() {
@@ -10,6 +11,11 @@
     stats.update(s => { s.sound = !s.sound; stats.save(s); return s })
     beep('click')
   }
+  function switchProfile() {
+    profiles.select(null)
+    localStorage.removeItem('cdr_current_profile')
+    location.reload()
+  }
 
   $: dark  = $stats.dark
   $: sound = $stats.sound
@@ -18,6 +24,7 @@
   $: xpPct = getXPProgress(xp)
   $: inQuiz = $screen === 'quiz'
   $: gs    = $gameState
+  $: profile = $currentProfile
 </script>
 
 <header>
@@ -27,6 +34,14 @@
   </div>
 
   <div class="hdr-r">
+    <!-- Profile pill -->
+    {#if profile}
+      <button class="profile-pill" onclick={switchProfile} title="Changer de profil">
+        <span class="pp-avatar">{profile.avatar}</span>
+        <span class="pp-name">{profile.name}</span>
+      </button>
+    {/if}
+
     <!-- Theme & sound -->
     <button class="icon-btn" onclick={toggleSound} title="Son">{sound ? '🔔' : '🔕'}</button>
     <button class="icon-btn" onclick={toggleTheme} title="Thème">{dark ? '☀️' : '🌙'}</button>
@@ -112,4 +127,15 @@
     border-radius: 99px; transition: width .6s cubic-bezier(.4,0,.2,1);
   }
   .xp-lbl { font-size: .64rem; color: var(--mut); font-weight: 600 }
+
+  .profile-pill {
+    display: flex; align-items: center; gap: 5px;
+    background: var(--card); border: 1.5px solid var(--brd);
+    border-radius: 100px; padding: 3px 10px 3px 4px;
+    cursor: pointer; transition: all .2s; color: var(--txt);
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: .72rem;
+  }
+  .profile-pill:hover { border-color: var(--acc); color: var(--acc) }
+  .pp-avatar { font-size: 1.1rem; line-height: 1 }
+  .pp-name { max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
 </style>

@@ -1,6 +1,14 @@
 import { writable } from 'svelte/store'
+import { statsKey } from './profiles.js'
 
-const SK = 'cdr_svelte_v1'
+// Dynamic storage key based on current profile
+let _key = 'cdr_svelte_default'
+
+export function setStatsProfile(profileId) {
+  _key = statsKey(profileId)
+  const fresh = load()
+  stats.set(fresh)
+}
 
 function mkDefault() {
   return {
@@ -13,8 +21,8 @@ function mkDefault() {
     bestStreak: 0,
     totalPts:   0,
     daily:      { date: '', count: 0 },
-    history:    {},       // { 'YYYY-MM-DD': questionsAnswered }
-    lastErrors: [],       // question _ids from last session's errors
+    history:    {},
+    lastErrors: [],
     xp:         0,
     level:      1,
     achievements: [],
@@ -24,21 +32,18 @@ function mkDefault() {
 }
 
 function load() {
-  try { return { ...mkDefault(), ...JSON.parse(localStorage.getItem(SK) || '{}') } }
+  try { return { ...mkDefault(), ...JSON.parse(localStorage.getItem(_key) || '{}') } }
   catch { return mkDefault() }
 }
 
 function createStats() {
   const { subscribe, set, update } = writable(load())
-
   return {
     subscribe,
-    save(data) {
-      localStorage.setItem(SK, JSON.stringify(data))
-    },
+    save(data) { localStorage.setItem(_key, JSON.stringify(data)) },
     update,
     set,
-    reset() { const d = mkDefault(); set(d); localStorage.setItem(SK, JSON.stringify(d)) },
+    reset() { const d = mkDefault(); set(d); localStorage.setItem(_key, JSON.stringify(d)) },
   }
 }
 
@@ -61,7 +66,6 @@ export function getXPProgress(xp) {
   return Math.round(((xp - start) / (end - start)) * 100)
 }
 
-// Compute consecutive daily streak from history
 export function getDailyStreak(history = {}) {
   if (!history) return 0
   let streak = 0
@@ -76,7 +80,6 @@ export function getDailyStreak(history = {}) {
   return streak
 }
 
-// Achievements definitions
 export const ACHIEVEMENTS = [
   { id: 'first_session',    icon: '🎉', label: 'Première session',       desc: 'Terminer sa première révision' },
   { id: 'streak_5',         icon: '🔥', label: 'En feu',                 desc: '5 bonnes réponses de suite' },
