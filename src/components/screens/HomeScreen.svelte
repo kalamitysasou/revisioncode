@@ -65,7 +65,8 @@
   <div class="hero">
     <div class="hero-icon">🚦</div>
     <h1 class="syne">Révise le <span class="acc">Code de la Route</span></h1>
-    <p class="sub">110 vraies questions · Examen blanc · Survie · Anki · Achievements</p>
+    <p class="sub">210 questions · Examen blanc · Survie · Anki · Achievements</p>
+  <p class="disclaimer">⚠️ Base d'entraînement — non officielle ANTS</p>
   </div>
 
   <!-- Daily goal -->
@@ -166,6 +167,7 @@
   h1 { font-size: 1.7rem; line-height: 1.2; letter-spacing: -.03em; margin-bottom: 6px }
   .acc { color: var(--acc) }
   .sub { color: var(--mut); font-size: .82rem; line-height: 1.7 }
+  .disclaimer { font-size: .68rem; color: var(--org); opacity: .8; margin-top: -6px }
 
   .sect-lbl {
     font-size: .66rem; font-weight: 700; letter-spacing: .08em;
