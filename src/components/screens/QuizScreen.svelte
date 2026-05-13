@@ -21,6 +21,7 @@
       if (q?.m && gs.selected.includes(i)) return 'selected'
       return ''
     }
+    if (blind) return gs.selected.includes(i) ? 'selected-blind' : ''
     const right = q.r.includes(i)
     const sel   = gs.selected.includes(i)
     if (right && sel)   return 'correct'
@@ -51,6 +52,9 @@
     if (gs.answered || !gs.selected.length) return
     checkAnswer(gs.selected)
   }
+
+  // Blind mode: hide immediate feedback, show score only at end
+  let blind = false
 
   // Feedback content
   $: fbResult = gs.answered && q
@@ -128,8 +132,8 @@
     <!-- Question card -->
     {#key gs.idx}
       <div class="q-card" in:fly={{ y: 20, duration: 280 }}
-        class:correct-anim={gs.answered && fbResult?.isOk}
-        class:wrong-anim={gs.answered && fbResult && !fbResult.isOk}
+        class:correct-anim={!blind && gs.answered && fbResult?.isOk}
+        class:wrong-anim={!blind && gs.answered && fbResult && !fbResult.isOk}
         class:exam-mode={gs.isExam}
       >
         <div class="q-num">Question {gs.idx+1}</div>
@@ -167,7 +171,7 @@
     {/key}
 
     <!-- Feedback box -->
-    {#if gs.answered && fbResult && !gs.isExam}
+    {#if gs.answered && fbResult && !gs.isExam && !blind}
       <div class="fb" class:fb-ok={fbResult.isOk} class:fb-err={!fbResult.isOk && !fbResult.isPartial} class:fb-partial={fbResult.isPartial}
         in:fly={{ y: 8, duration: 220 }}
       >
@@ -183,7 +187,7 @@
     {/if}
 
     <!-- XP earned float -->
-    {#if gs.answered}
+    {#if gs.answered && !blind}
       {@const lastR = gs.results.at(-1)}
       {#if lastR?.xp > 0}
         <div class="xp-float" in:scale={{ duration: 300, start: 0.5 }}>+{lastR.xp} XP</div>
@@ -192,10 +196,15 @@
 
     <!-- Controls -->
     <div class="ctrls">
-      {#if !gs.isExam}
+      {#if !gs.isExam && !blind}
         <button class="ctrl-btn" onclick={useHint} disabled={gs.answered || gs.hintUsed} title="Indice (H)">💡</button>
       {/if}
       <button class="ctrl-btn" class:starred={isStarred} onclick={toggleStar} title="Marquer comme difficile">⭐</button>
+      {#if !gs.isExam}
+        <button class="ctrl-btn ctrl-blind" class:blind-on={blind} onclick={() => blind = !blind} title="Score à la fin seulement">
+          {blind ? '👁️' : '🙈'}
+        </button>
+      {/if}
       {#if q.m && !gs.answered}
         <button class="btn btn-acc ctrl-validate" onclick={validate} disabled={!gs.selected.length}>Valider ✓</button>
       {/if}
@@ -281,6 +290,7 @@
   .opt.missed   { background: rgba(234,179,8,.08);  border-color: var(--ylw) !important }
   .opt.revealed { opacity: .28 }
   .opt.hint-out { opacity: .18; cursor: not-allowed }
+  .opt.selected-blind { border-color: var(--acc); background: rgba(59,130,246,.1) }
   .opt:disabled { cursor: default }
   .opt-ltr {
     width: 22px; height: 22px; min-width: 22px; border-radius: 6px;
@@ -332,6 +342,8 @@
   .ctrl-btn:disabled { opacity: .28; cursor: default }
   .ctrl-btn.starred  { border-color: var(--ylw); color: var(--ylw); background: rgba(234,179,8,.1) }
   .ctrl-validate, .ctrl-next { flex: 1; padding: 11px 16px; font-size: .86rem }
+  .ctrl-blind { opacity: .6 }
+  .ctrl-blind.blind-on { border-color: var(--pur); color: var(--pur); background: rgba(168,85,247,.1); opacity: 1 }
   .next-hint { font-size: .65rem; opacity: .6 }
 
   .swipe-hint { text-align: center; font-size: .67rem; color: var(--mut); opacity: .5 }

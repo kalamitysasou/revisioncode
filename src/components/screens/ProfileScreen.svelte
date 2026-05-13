@@ -95,35 +95,36 @@
   .ps-wrap {
     min-height: 100vh; display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    padding: 24px 16px; gap: 24px;
+    padding: 24px 16px; gap: 28px;
   }
 
   .ps-hero { text-align: center }
-  .ps-icon { font-size: 3rem; margin-bottom: 10px }
-  h1 { font-size: 1.8rem; font-weight: 800; letter-spacing: -.03em; margin-bottom: 6px }
-  .ps-sub { color: var(--mut); font-size: .84rem }
+  .ps-icon { font-size: 3.2rem; margin-bottom: 12px }
+  h1 { font-size: 1.9rem; font-weight: 800; letter-spacing: -.03em; margin-bottom: 8px }
+  .ps-sub { color: var(--acc); font-size: .86rem; font-weight: 600 }
 
   .sect-lbl { font-size: .66rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--mut); margin-bottom: 8px }
 
   .profiles {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 10px; width: 100%; max-width: 480px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 12px; width: 100%; max-width: 500px;
   }
 
   .profile-card {
-    background: var(--card); border: 2px solid var(--brd); border-radius: 16px;
-    padding: 20px 10px; cursor: pointer; transition: all .2s;
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    background: var(--sur); border: 2px solid rgba(59,130,246,.35); border-radius: 16px;
+    padding: 22px 12px 16px; cursor: pointer; transition: all .2s;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
     position: relative; color: var(--txt);
+    box-shadow: 0 2px 12px rgba(0,0,0,.15);
   }
-  .profile-card:hover { border-color: var(--acc); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,.2) }
+  .profile-card:hover { border-color: var(--acc); transform: translateY(-4px); box-shadow: 0 10px 28px rgba(59,130,246,.2) }
 
-  .add-card { border-style: dashed; color: var(--mut) }
+  .add-card { border-style: dashed; border-color: var(--brd); color: var(--mut); background: var(--card) }
   .add-card:hover { border-color: var(--acc); color: var(--acc) }
 
-  .p-avatar { font-size: 2.4rem; line-height: 1 }
+  .p-avatar { font-size: 2.8rem; line-height: 1 }
   .add-icon { font-size: 2rem; color: inherit }
-  .p-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .84rem; text-align: center }
+  .p-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .88rem; text-align: center; color: var(--txt) }
 
   .p-del {
     position: absolute; top: 6px; right: 6px;
