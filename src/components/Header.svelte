@@ -2,7 +2,6 @@
   import { screen, gameState, selMode } from '../stores/game.js'
   import { stats, getLevelFromXP, getXPProgress } from '../stores/stats.js'
   import { profiles, currentProfile } from '../stores/profiles.js'
-  import { subject } from '../stores/subject.js'
   import { beep } from '../lib/sound.js'
 
   function toggleTheme() {
@@ -18,16 +17,6 @@
     location.reload()
   }
 
-  function toggleSubject() {
-    subject.update(s => s === 'cdr' ? 'emc' : 'cdr')
-    if ($screen !== 'home') screen.set('home')
-  }
-
-  const SUBJECTS = {
-    cdr: { icon: '🚗', label: 'Code de la Route' },
-    emc: { icon: '🏛️', label: 'EMC' },
-  }
-
   $: dark  = $stats.dark
   $: sound = $stats.sound
   $: xp    = $stats.xp ?? 0
@@ -39,10 +28,10 @@
 </script>
 
 <header>
-  <button class="logo" onclick={toggleSubject} title="Changer de matière">
-    <div class="logo-i">{SUBJECTS[$subject].icon}</div>
-    <span class="syne">{SUBJECTS[$subject].label}</span>
-  </button>
+  <div class="logo">
+    <div class="logo-i">🚗</div>
+    <span class="syne">Code de la Route</span>
+  </div>
 
   <div class="hdr-r">
     <!-- Profile pill -->
@@ -98,10 +87,8 @@
   .logo {
     font-family: 'Syne', sans-serif; font-weight: 800; font-size: .9rem;
     color: var(--txt); display: flex; align-items: center; gap: 7px;
-    flex-shrink: 0; background: none; border: none; cursor: pointer;
-    padding: 0; transition: opacity .2s;
+    flex-shrink: 0;
   }
-  .logo:hover { opacity: .75 }
   .logo-i {
     width: 28px; height: 28px; background: var(--acc); border-radius: 7px;
     display: flex; align-items: center; justify-content: center; font-size: 14px;
