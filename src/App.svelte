@@ -10,7 +10,9 @@
   import ResultsScreen from './components/screens/ResultsScreen.svelte'
   import DashScreen from './components/screens/DashScreen.svelte'
   import HardScreen from './components/screens/HardScreen.svelte'
+  import EmcScreen from './components/screens/EmcScreen.svelte'
   import AchievementToast from './components/ui/AchievementToast.svelte'
+  import { subject } from './stores/subject.js'
 
   // When profile changes, reload stats for that profile
   $: if ($profiles.currentId) {
@@ -34,7 +36,11 @@
   <main class="layout">
     {#if $screen === 'home'}
       <div transition:fade={{ duration: 200 }}>
-        <HomeScreen />
+        {#if $subject === 'emc'}
+          <EmcScreen />
+        {:else}
+          <HomeScreen />
+        {/if}
       </div>
     {:else if $screen === 'quiz'}
       <div transition:fade={{ duration: 150 }}>
